@@ -21,7 +21,7 @@ app.use(cookieParser())
 //routes import 
 //import userRouter from "./routes/user.router.js";
 import userRouter from "./routes/user.routes.js"
-console.log("userRouter:", typeof userRouter); 
+
 
 //Routes decleration
 app.use("/Api/v1/users",userRouter)
