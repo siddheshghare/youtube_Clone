@@ -5,10 +5,10 @@ import cookieParser from "cookie-parser"
 
 
 const app = express()
-app.use({
-    origin :process.env.CORSE_ORIGIN,
-    credentials:true
-})
+app.use(cors({ origin: process.env.CORS_ORIGIN , 
+    credentials: true }));
+
+
 
 app.use(express.json({limit:"16kb"}))
 
@@ -18,6 +18,15 @@ app.use(express.static("public"))
 
 app.use(cookieParser())
 
+//routes import 
+//import userRouter from "./routes/user.router.js";
+import userRouter from "./routes/user.routes.js"
+console.log("userRouter:", typeof userRouter); 
+
+//Routes decleration
+app.use("/Api/v1/users",userRouter)
+//http://localhost:8000/api/v1/users/register  link will look like this
 
 
- export {app}
+
+ export {app};
