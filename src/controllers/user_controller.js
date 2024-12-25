@@ -12,7 +12,7 @@ const generateAccessAndRefreshToken = async (userId) => {
         const accessToken = user.generateAccessToken()
         const refreshToken = user.generateRefreshToken();
         user.refreshToken = refreshToken;
-        await User.save({ validateBeforeSave: false })
+        await user.save({ validateBeforeSave: false })
         return { accessToken, refreshToken }
 
 
@@ -117,7 +117,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const { username, email, password } = req.body
 
-    if (!username || !email) {
+    if (!(username || email)) {
         throw new ApiError(400, "username or password required")
 
     }
@@ -135,9 +135,8 @@ const loginUser = asyncHandler(async (req, res) => {
 
 
     if (!isPasswordValid) {
-        throw new ApiError(400, "invalid password"
-
-        )
+        throw new ApiError(400, "invalid password")
+    }
 
 
         const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id)
@@ -163,7 +162,7 @@ const loginUser = asyncHandler(async (req, res) => {
                 )
             )
 
-    }
+    
 
 
 
