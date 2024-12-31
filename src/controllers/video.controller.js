@@ -4,11 +4,23 @@ import path from "path";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { Video } from "../models/video.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import ffmpeg from "fluent-ffmpeg";
+import { application } from "express";
 
 
 
 
-
+const getVideoDuration = (filePath) => {
+    return new Promise((resolve, reject) => {
+        ffmpeg.ffprobe(filePath, (err, metadata) => {
+            if (err) {
+                return reject(err);
+            }
+            const durationInSeconds = metadata.format.duration; // Duration in seconds
+            resolve(durationInSeconds);
+        });
+    });
+};
 
 
 
@@ -36,10 +48,15 @@ const publishVideo = asyncHandler(async (req, res) => {
     }
     const videoFile = await uploadOnCloudinary(videoFileLocalPath)
 
+
+    
+
     if (!videoFile) {
         throw new ApiError(400, "failed to upload on cloudinary")
 
     }
+
+    //const duration = await getVideoDuration(videoFile.url)
 
     const thumbnail = await uploadOnCloudinary(thumbnailLocalPath)
     if (!thumbnail) {
@@ -74,4 +91,21 @@ const publishVideo = asyncHandler(async (req, res) => {
 
 })
 
-export {publishVideo}
+const getVideoById=asyncHandler(async(req,res)=>{
+    const {videoId}=req.params
+
+    if (!videoId) {
+        throw new ApiError(400,"video id  required")
+    }
+    const video=await Video.findById(videoId)
+    if (!video) {
+        throw new ApiError(400 ,"video not found")
+    }
+    return res.status(200)
+          .json(
+            new ApiResponse(200,video,"video fetched successfully")
+          )
+})
+
+export {publishVideo,
+    getVideoById}
