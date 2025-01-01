@@ -49,7 +49,7 @@ const publishVideo = asyncHandler(async (req, res) => {
     const videoFile = await uploadOnCloudinary(videoFileLocalPath)
 
 
-    
+
 
     if (!videoFile) {
         throw new ApiError(400, "failed to upload on cloudinary")
@@ -63,49 +63,156 @@ const publishVideo = asyncHandler(async (req, res) => {
         throw new ApiError(400, "failed to upload on cloudinary")
     }
 
-    const owner= req.user._id
+    const owner = req.user._id
     console.log(videoFile.url);
-    
 
 
-    const uploadedVideo= await Video.create(
+
+    const uploadedVideo = await Video.create(
         {
-            title:title,
-            description:description,
-            videoFile:videoFile.url,
-            thumbnail:thumbnail?.url,
-            duration:"20",
-            owner:owner
+            title: title,
+            description: description,
+            videoFile: videoFile.url,
+            thumbnail: thumbnail?.url,
+            duration: "20",
+            owner: owner
 
         }
     )
 
     if (!uploadedVideo) {
-        throw new ApiError(501,"something went wrong while uploading video")
+        throw new ApiError(501, "something went wrong while uploading video")
     }
 
     return res.status(200)
-    .json(
-        new ApiResponse(200,uploadedVideo,"video uploaded successfully")
-    )
+        .json(
+            new ApiResponse(200, uploadedVideo, "video uploaded successfully")
+        )
 
 })
 
-const getVideoById=asyncHandler(async(req,res)=>{
-    const {videoId}=req.params
+const getVideoById = asyncHandler(async (req, res) => {
+    const { videoId } = req.params
 
     if (!videoId) {
-        throw new ApiError(400,"video id  required")
+        throw new ApiError(400, "video id  required")
     }
-    const video=await Video.findById(videoId)
+    const video = await Video.findById(videoId)
     if (!video) {
-        throw new ApiError(400 ,"video not found")
+        throw new ApiError(400, "video not found")
     }
     return res.status(200)
-          .json(
-            new ApiResponse(200,video,"video fetched successfully")
-          )
+        .json(
+            new ApiResponse(200, video, "video fetched successfully")
+        )
 })
 
-export {publishVideo,
-    getVideoById}
+
+const getAllVideos = asyncHandler(async (req, res) => {
+    const { page, limit, query, sortBy, sortType, userId } = req.query
+
+    const filter = {}
+
+    if (query) {
+        filter.title = { $regex: query, $options: "i" }
+
+    }
+    if (userId) {
+        filter.userId = userId
+    }
+
+    const sortorder = sortType === "asc" ? 1 : -1
+
+
+    const allVideos = await Video.find(filter)
+        .sort({ [sortBy]: sortorder })
+        .skip((page - 1) * limit)
+        .limit(limit)
+
+    if (!allVideos) {
+        throw new ApiError(400, "video not found")
+    }
+
+    return res.status(200)
+        .json(
+            new ApiResponse(200, allVideos, "fetched all videos successfully")
+        )
+
+})
+
+
+const updateVideoDetails = asyncHandler(async (req, res) => {
+
+    const { videoId, title, description } = req.body
+    if (!videoId) {
+        throw new ApiError(400, "videoId required")
+    }
+
+    if (!title && !description) {
+        throw new ApiError(400, "title or description is required")
+    }
+
+    const thumbnaillocalPath = req.file.path
+
+    if (!thumbnaillocalPath) {
+        throw new ApiError(400, "thumbnail not fetched")
+    }
+
+    const thumbnail = await uploadOnCloudinary(thumbnaillocalPath)
+    if (!thumbnail) {
+        throw new ApiError(400, "problem to upload on cloudinary")
+    }
+
+    const updatedVideo = await Video.findByIdAndUpdate(videoId,
+        {
+            $set: {
+                title: title,
+                description: description,
+                thumbnail: thumbnail.url
+
+            }
+        },
+        {
+            new: true
+        }
+    )
+    if (!updatedVideo) {
+        throw new ApiError(400, "video not found")
+    }
+
+    return res.status(200)
+        .json(
+            new ApiResponse(200, updatedVideo, "video details updated successfully")
+        )
+
+})
+
+const deleteVideo = asyncHandler(async (req, res) => {
+    const { videoId } = req.body
+    if (!videoId) {
+        throw new ApiError(400, "videoId required"
+        )
+    }
+
+    const Deleted = await Video.deleteOne({ _id: videoId })
+
+    if (Deleted.deletedCount === 0) {
+        throw new ApiError(400, "Video not found or not deleted");
+    }
+
+   
+    return res.
+        status(200)
+        .json(
+            new ApiResponse(200, {}, "Video deleted successfully")
+        );
+
+})
+
+export {
+    publishVideo,
+    getVideoById,
+    getAllVideos,
+    updateVideoDetails,
+    deleteVideo
+}
