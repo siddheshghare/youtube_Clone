@@ -25,7 +25,13 @@ import userRouter from "./routes/user.routes.js"
 import videoRouter from "./routes/video.routes.js"
 
 
-//Routes decleration
+import subscriptionRouter from "./routes/subscription.route.js"
+
+
+app.use("/api/v1/subscriptions", subscriptionRouter)
+
+
+
 app.use("/Api/v1/users",userRouter)
 
 app.use("/Api/v1/users",videoRouter)
