@@ -27,6 +27,8 @@ const getVideoDuration = (filePath) => {
 const publishVideo = asyncHandler(async (req, res) => {
 
     const { title, description } = req.body
+    console.log("hi");
+    
 
     if (!title) {
         throw new ApiError(400, "title required")
@@ -34,6 +36,7 @@ const publishVideo = asyncHandler(async (req, res) => {
     }
 
     const videoFileLocalPath = req.files?.videoFile[0]?.path
+    console.log("hi");
 
     if (!videoFileLocalPath) {
         throw new ApiError(400, "videoFile required")

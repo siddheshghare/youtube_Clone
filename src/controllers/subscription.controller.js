@@ -2,6 +2,8 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import {Subscription} from "../models/subscription.model.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
+import mongoose from "mongoose";
+const { ObjectId } = mongoose.Types;
 
 
 
@@ -48,7 +50,13 @@ const toggleSubscription = asyncHandler(async(req,res)=>{
 })
 
 const getChanelSubscribers = asyncHandler(async(req, res)=>{
-    const chanelId = req.body
+    const {chanelId} = req.body
+    console.log(chanelId);
+    
+
+    if (!ObjectId.isValid(chanelId)) {
+        throw new Error("Invalid chanelId format");
+      }
 
     if (!chanelId) {
         throw new ApiError(200,"chanelid required")
@@ -57,7 +65,7 @@ const getChanelSubscribers = asyncHandler(async(req, res)=>{
     const pipeline = [
         {
             $match: {
-                channel: chanelId, // Match the specific channel
+                channel: new ObjectId(chanelId) , // Match the specific channel
             },
         },
         {
@@ -82,6 +90,8 @@ const getChanelSubscribers = asyncHandler(async(req, res)=>{
         },
     ];
     const subscriberList = await Subscription.aggregate(pipeline);
+  
+    
 
     if (subscriberList === 0) {
         return res .status(200)
