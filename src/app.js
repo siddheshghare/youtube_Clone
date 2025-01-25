@@ -23,14 +23,14 @@ app.use(cookieParser())
 import userRouter from "./routes/user.routes.js"
 
 import videoRouter from "./routes/video.routes.js"
-
+import commentRouter from "./routes/comment.route.js"
 import likeRouter from "./routes/like.route.js"
 import subscriptionRouter from "./routes/subscription.route.js"
 
 
 app.use("/api/v1/subscriptions", subscriptionRouter)
 app.use("/api/v1/like",likeRouter)
-
+app.use("/Api/v1/comment",commentRouter)
 
 app.use("/Api/v1/users",userRouter)
 

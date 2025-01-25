@@ -4,12 +4,12 @@ import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2"
 
 const commentSchema = new Schema({
     video:
-        [
+        
             {
                 type: Schema.Types.ObjectId,
                 ref: "Video"
             }
-        ],
+        ,
 
 
     content:
@@ -20,12 +20,12 @@ const commentSchema = new Schema({
 
     
     owner:
-        [
+        
             {
                 type: Schema.Types.ObjectId,
                 ref: "User"
             }
-        ]
+        
 }, { timestamps: true })
 
 commentSchema.plugin(mongooseAggregatePaginate)

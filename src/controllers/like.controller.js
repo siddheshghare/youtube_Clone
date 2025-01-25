@@ -52,37 +52,37 @@ const toggleVideoLike = asyncHandler(async(req,res)=>{
 const getLikedVideos = asyncHandler(async (req, res) => {
     const userId = req.user._id;
   
-    // Step 1: Build the aggregation pipeline
+    
     const pipeline = [
       {
         $match: {
-          likedBy: new ObjectId(userId), // Match likes by the user
+          likedBy: new ObjectId(userId), 
         },
       },
       {
         $lookup: {
-          from: "videos", // Collection name (pluralized and lowercase)
-          localField: "video", // Field in `like` collection
-          foreignField: "_id", // Field in `videos` collection
-          as: "likedVideos", // Output array containing video details
+          from: "videos", 
+          localField: "video",
+          foreignField: "_id", 
+          as: "likedVideos", 
         },
       },
       {
-        $unwind: "$likedVideos", // Deconstruct the `likedVideos` array
+        $unwind: "$likedVideos", 
       },
       {
         $project: {
-          videoId: "$likedVideos._id", // Video ID
-          title: "$likedVideos.title", // Video title
-          description: "$likedVideos.description", // Video description
+          videoId: "$likedVideos._id", 
+          title: "$likedVideos.title", 
+          description: "$likedVideos.description", // 
         },
       },
     ];
   
-    // Step 2: Execute the aggregation query
+    
     const likedVideos = await Like.aggregate(pipeline);
   
-    // Step 3: Handle cases where no liked videos are found
+    
     if (likedVideos.length === 0) {
       return res.status(200).json({
         success: true,
@@ -91,7 +91,7 @@ const getLikedVideos = asyncHandler(async (req, res) => {
       });
     }
   
-    // Step 4: Return the liked videos
+   
     return res.status(200).json({
       success: true,
       likedVideos,
