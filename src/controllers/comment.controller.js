@@ -35,5 +35,57 @@ const addComment = asyncHandler(async(req,res)=>{
 
 })
 
-export {addComment}
+const deleteComment = asyncHandler(async (req, res) => {
+    const commentId = req.body
+
+    if (!commentId) {
+        throw new ApiError(400 , "commentid required")
+    }
+
+    const comment = await Comment.findById(commentId)
+    if (!comment) {
+        throw new ApiError(400 , "comment not found")
+    }
+    await comment.deleteOne()
+    res.status(200)
+    .json(
+        new ApiResponse(200,{},"comment deleted successfully")
+    )
+})
+
+    const updateComment = asyncHandler(async (req, res) => {
+        const [commentId ,content] = req.body
+
+        if (!commentId || !content) {
+            throw new ApiError(400 , "commentid And content required")
+        }
+    
+        const comment = await Comment.findById(commentId)
+        if (!comment) {
+            throw new ApiError(404 , "comment not found")
+        }
+
+        const updatedComment = await Comment.findByIdAndUpdate(
+            commentId,
+        {
+             $set:{
+                content:content
+             }
+        },
+        {
+            new:true
+        }
+        )
+
+        if (!updatedComment) {
+            throw new ApiError(500,"internal server error")
+        }
+        res.status(200)
+        .json(
+            new ApiResponse(200,updatedComment,"comment updated successfully")
+        )
+
+})
+
+export {addComment,deleteComment}
 
