@@ -114,7 +114,9 @@ const getVideoById = asyncHandler(async (req, res) => {
 const getAllVideos = asyncHandler(async (req, res) => {
     const { page, limit, query, sortBy, sortType, userId } = req.query
 
-    const filter = {}
+    const filter = {
+        
+    }
 
     if (query) {
         filter.title = { $regex: query, $options: "i" }
@@ -129,8 +131,9 @@ const getAllVideos = asyncHandler(async (req, res) => {
 
     const allVideos = await Video.find(filter)
         .sort({ [sortBy]: sortorder })
-        .skip((page - 1) * limit)
+       
         .limit(limit)
+        .skip((page - 1) * limit)
 
     if (!allVideos) {
         throw new ApiError(400, "video not found")
@@ -226,7 +229,7 @@ const togglePublishStatus= asyncHandler(async(req,res)=>{
         throw new ApiError(400,"video not found")
     }
 
-    video.ispublished = !video.ispublished;
+    video.isPublished = !video.isPublished;
 
 
     const toggled = await video.save()

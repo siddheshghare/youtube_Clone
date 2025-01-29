@@ -29,6 +29,7 @@ router.route("/allVideos").get(getAllVideos)
 
 router.route("/updateDetails").put(verifyJWT,upload.single("thumbnail"),updateVideoDetails)
 router.route("/deleteVideo").delete(verifyJWT, deleteVideo);
-router.route("/toggle").put(verifyJWT, togglePublishStatus);
+router.route("/togglePublish").get(verifyJWT, togglePublishStatus);
+
 
 export default router
