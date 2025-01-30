@@ -1,4 +1,4 @@
-
+import {Comment} from "../models/comment.model.js"
 import {Video} from "../models/video.model.js"
 import {Like} from "../models/like.model.js"
 import {ApiError} from "../utils/ApiError.js"
@@ -97,6 +97,45 @@ const getLikedVideos = asyncHandler(async (req, res) => {
       likedVideos,
     });
   });
+
+  const toggleCommentLike = asyncHandler(async (req, res) => {
+    const {commentId}=req.body
+    const likedBy= req.user._id
+
+    if (!commentId) {
+        throw new ApiError(400,"commentId required")
+    }
+
+    const comment= await Comment.findById(commentId)
+    if (!comment) {
+        throw new ApiError(400,"comment not found")
+    }
+
+    
+    const alreadyLiked= await Like.findOne({comment:commentId,likedBy})
+    if (alreadyLiked) {
+        await alreadyLiked.deleteOne()
+
+        res.status(200)
+        .json(
+            new ApiResponse(200,alreadyLiked,"unliked successfully")
+        )
+    }
+    else{
+        const newLike=await Like.create({
+            comment:commentId,
+            likedBy
+        })
+        res.status(200)
+            .json(
+                new ApiResponse(200,newLike,"liked successfully")
+            )
+    }
+
+   
+
+})
+
   
 
-export {toggleVideoLike ,getLikedVideos}
+export {toggleVideoLike ,getLikedVideos,toggleCommentLike}
