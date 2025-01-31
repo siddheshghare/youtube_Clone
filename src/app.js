@@ -26,14 +26,13 @@ import videoRouter from "./routes/video.routes.js"
 import commentRouter from "./routes/comment.route.js"
 import likeRouter from "./routes/like.route.js"
 import subscriptionRouter from "./routes/subscription.route.js"
-
+import playlistRouter from "./routes/playlist.route.js"
 
 app.use("/api/v1/subscriptions", subscriptionRouter)
 app.use("/api/v1/like",likeRouter)
 app.use("/Api/v1/comment",commentRouter)
-
 app.use("/Api/v1/users",userRouter)
-
+app.use("/Api/v1/playlist",playlistRouter)
 app.use("/Api/v1/users",videoRouter)
 //http://localhost:8000/api/v1/users/register  link will look like this
 

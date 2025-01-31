@@ -1,10 +1,10 @@
 import mongoose, { Schema } from "mongoose"
 
 const playlistSchema = new Schema({
-    video: {
+    videos: [{
         type: Schema.Types.ObjectId,
         ref: "Video"
-    },
+    }],
     name:{
         type:String,
         required:true
